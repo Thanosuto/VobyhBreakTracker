@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Brainrot Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #111827; color: white; }
+        .card-bg { background-color: #1f2937; border: 1px solid #374151; }
+        .stat-box { background-color: #111827; border: 1px solid #374151; }
+        .progress-bar { height: 8px; border-radius: 4px; background: #374151; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-4">
+
+    <div class="card-bg w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+        <button class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
+        
+        <h1 class="text-center text-xl font-bold mb-4">Brainrot Tracker</h1>
+
+        <div class="flex justify-center mb-6">
+            <img src="https://tr.rbxcdn.com/180DAY-6f81e367856429f6356396f7c5f87b32/420/420/Hat/Webp" alt="Item" class="w-40 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mb-6">
+            <div class="stat-box p-2 rounded-lg text-center">
+                <p class="text-[10px] text-gray-400 uppercase">Total Exists</p>
+                <p class="text-sm font-bold text-blue-400" id="total-exists">0</p>
+            </div>
+            <div class="stat-box p-2 rounded-lg text-center">
+                <p class="text-[10px] text-gray-400 uppercase">Avg Rebirth</p>
+                <p class="text-sm font-bold text-green-400" id="avg-reb">0</p>
+            </div>
+            <div class="stat-box p-2 rounded-lg text-center">
+                <p class="text-[10px] text-gray-400 uppercase">Avg Coins</p>
+                <p class="text-sm font-bold text-yellow-400">$0</p>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-gray-400 text-xs font-semibold mb-3 uppercase tracking-widest">Mutations & Traits</h2>
+            
+            <div id="mutations-list" class="space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        async function updateWeb() {
+            const res = await fetch('/api/update');
+            const data = await res.json();
+            
+            // Ejemplo con un item específico (puedes iterar sobre todos)
+            const itemName = "Pufferfish"; // O el que prefieras mostrar
+            const stats = data.items[itemName] || { exists: 0, reb: 0 };
+
+            document.getElementById('total-exists').innerText = stats.exists.toLocaleString();
+            document.getElementById('avg-reb').innerText = (stats.reb / (stats.exists || 1)).toFixed(1);
+
+            // Generar fila de mutación (ejemplo Gold)
+            const list = document.getElementById('mutations-list');
+            list.innerHTML = `
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-yellow-500 font-bold flex items-center">
+                        <span class="mr-1">●</span> Gold
+                    </span>
+                    <div class="progress-bar flex-1 mx-4">
+                        <div class="progress-fill bg-yellow-500" style="width: 65%"></div>
+                    </div>
+                    <span class="text-gray-300">${stats.exists} (100%)</span>
+                </div>
+            `;
+        }
+
+        setInterval(updateWeb, 5000); // Actualiza la web cada 5 seg
+        updateWeb();
+    </script>
+</body>
+</html>
